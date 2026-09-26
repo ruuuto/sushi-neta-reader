@@ -132,8 +132,9 @@ footer{color:var(--ink-3);font-size:13px;text-align:center;line-height:1.8}
   </section>
 
   <div class="actions">
-    <label class="btn" for="cam">皿を撮る</label>
-    <label class="btn" for="pick">写真を選ぶ</label>
+    <!-- 写真を選ぶ は一時的に非表示。戻すときは hidden と下の style を外す -->
+    <label class="btn" for="cam" style="grid-column:1/-1">皿を撮る</label>
+    <label class="btn" for="pick" hidden>写真を選ぶ</label>
     <button class="btn primary" id="go" disabled>このネタは何？</button>
     <button class="btn ghost" id="random">サンプルからランダムに試す</button>
   </div>
