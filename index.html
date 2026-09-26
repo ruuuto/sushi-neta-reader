@@ -1,114 +1,114 @@
 <title>Kaiten Neta Reader</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500&family=Roboto+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+JP:wght@400;500&display=swap">
 <style>
+/* 白地に固定する。端末がダークモードでも明るいまま表示する */
 :root{
-  --shari:#F8F5EF; --shari-2:#ECE6DA; --ink:#15191B; --ink-2:#414749;
-  --muted:#7E857F; --line:#DCD6C9; --surface:#FFFFFF;
-  --belt:#D8D2C4; --belt-edge:#BFB8A7; --counter:#E7E0D1;
-  --maguro:#BF3A2F; --sora:#3A6B89; --ebi:#D39C18; --wasabi:#69893B; --nori:#293832; --ki:#956645;
-  --bg:var(--shari); --fg:var(--ink); --fg-2:var(--ink-2); --border:var(--line);
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#111416; --fg:#EDE8DD; --fg-2:#B4B9B3; --muted:#8C928C;
-    --surface:#1A1E20; --border:#2C3234; --shari-2:#242A2C;
-    --belt:#232A2C; --belt-edge:#333B3D; --counter:#1A1E20;
-    --maguro:#E3604F; --sora:#72A6C6; --ebi:#E6BD4C; --wasabi:#9FC266; --ki:#C1906A; --nori:#8FA79B;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#111416; --fg:#EDE8DD; --fg-2:#B4B9B3; --muted:#8C928C;
-  --surface:#1A1E20; --border:#2C3234; --shari-2:#242A2C;
-  --belt:#232A2C; --belt-edge:#333B3D; --counter:#1A1E20;
-  --maguro:#E3604F; --sora:#72A6C6; --ebi:#E6BD4C; --wasabi:#9FC266; --ki:#C1906A; --nori:#8FA79B;
+  color-scheme:light;
+  --paper:#FFFFFF; --ink:#221B17; --ink-2:#5B524C; --ink-3:#8A817A;
+  --line:#EEE8E2; --belt:#F3EEE8; --belt-mark:#E3DAD0;
+  --red:#E5413A;
+  --g-maguro_salmon:#E5413A; --g-shiromi_aomono:#2B8BD6; --g-ika_tako_ebi:#EFA314;
+  --g-kai_nimono_tamago:#3DA863; --g-gunkan:#3D4F5C; --g-maki_sonota:#E47A2E;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);
-  font-family:"Noto Sans JP",system-ui,-apple-system,"Hiragino Sans",sans-serif;line-height:1.7}
-.wrap{max-width:620px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;
-  display:flex;flex-direction:column;gap:18px}
-h1{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:900;font-size:25px;line-height:1.25;
-  margin:0;text-wrap:balance}
-.lead{margin:6px 0 0;color:var(--fg-2);font-size:13.5px}
-.lead b{color:var(--fg);font-weight:500}
-.eyebrow{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
-  font-weight:500;margin:0}
+html,body{background:var(--paper)}
+body{color:var(--ink);font-family:"Noto Sans JP",system-ui,-apple-system,"Hiragino Sans",sans-serif;line-height:1.75}
+.wrap{max-width:720px;margin:0 auto;padding-inline:18px;padding-block:28px 56px;display:flex;flex-direction:column;gap:22px}
+.round{font-family:"M PLUS Rounded 1c","Noto Sans JP",sans-serif}
+
+header h1{margin:0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:34px;line-height:1.2;text-wrap:balance}
+header p{margin:8px 0 0;color:var(--ink-2);font-size:15px}
 
 /* レーン */
-.lane{position:relative;background:var(--belt);border-radius:16px;
-  border-block:3px solid var(--belt-edge);padding:18px 0;overflow:hidden}
-.lane::before,.lane::after{content:"";position:absolute;left:0;right:0;height:10px;
-  background:repeating-linear-gradient(90deg,var(--belt-edge) 0 16px,transparent 16px 34px);opacity:.55}
-.lane::before{top:0} .lane::after{bottom:0}
-.rail{display:flex;gap:14px;overflow-x:auto;padding:4px 16px;scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch}
+.lane{position:relative;background:var(--belt);border-radius:22px;padding:22px 0;overflow:hidden}
+.lane::before,.lane::after{content:"";position:absolute;left:0;right:0;height:8px;
+  background:repeating-linear-gradient(90deg,var(--belt-mark) 0 18px,transparent 18px 36px)}
+.lane::before{top:0}.lane::after{bottom:0}
+.rail{display:flex;gap:16px;overflow-x:auto;padding:4px 18px;scroll-snap-type:x mandatory}
 .rail::-webkit-scrollbar{height:0}
-.lane-empty{padding:26px 18px;text-align:center;color:var(--muted);font-size:13px}
-
-/* 皿 */
-.plate{scroll-snap-align:center;flex:0 0 auto;width:150px;display:flex;flex-direction:column;
-  align-items:center;gap:8px}
-.dish{position:relative;width:150px;height:150px;border-radius:50%;
-  background:var(--surface);border:8px solid var(--pc,var(--muted));
-  box-shadow:0 5px 14px rgba(0,0,0,.14);overflow:hidden;display:grid;place-items:center}
+.lane-empty{margin:0;padding:24px 18px;text-align:center;color:var(--ink-3);font-size:14px}
+.plate{scroll-snap-align:center;flex:0 0 auto;width:140px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.dish{position:relative;width:140px;height:140px;border-radius:50%;background:#fff;
+  border:9px solid var(--pc,#CFC6BC);box-shadow:0 6px 16px rgba(80,50,30,.12);overflow:hidden;display:grid;place-items:center}
 .dish img{width:100%;height:100%;object-fit:cover}
-.dish .del{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;
-  border:0;background:rgba(0,0,0,.6);color:#fff;font-size:14px;line-height:1;cursor:pointer;padding:0;z-index:2}
-.dish.add{background:transparent;border-style:dashed;border-color:var(--belt-edge);
-  box-shadow:none;cursor:pointer;color:var(--muted);font-size:13px;text-align:center;padding:12px}
-.dish.add:hover{border-color:var(--muted);color:var(--fg-2)}
-.tag{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;font-size:13px;
-  text-align:center;color:var(--fg-2);min-height:1.7em}
+.dish .del{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;border:0;
+  background:rgba(34,27,23,.65);color:#fff;font-size:15px;line-height:1;cursor:pointer;padding:0}
+.dish.add{background:transparent;border:3px dashed #CFC6BC;box-shadow:none;cursor:pointer;
+  color:var(--ink-3);font-size:14px;font-weight:700;text-align:center;padding:14px}
+.dish.add:hover{border-color:var(--red);color:var(--red)}
+.tag{margin:0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:700;font-size:14px;color:var(--ink-2);min-height:1.6em;text-align:center}
+
+/* ボタン */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{font-family:"M PLUS Rounded 1c",sans-serif;font-weight:700;font-size:16px;padding:14px 12px;
+  border-radius:999px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-align:center}
+.btn:hover{border-color:#D8CEC4}
+.btn.primary{grid-column:1/-1;background:var(--red);border-color:var(--red);color:#fff;font-size:18px;padding:16px}
+.btn.primary:disabled{opacity:.45;cursor:default}
+.btn.ghost{grid-column:1/-1;border-style:dashed;color:var(--ink-2)}
+.btn:focus-visible,.tab:focus-visible{outline:3px solid #2B8BD6;outline-offset:2px}
+input[type=file]{display:none}
+#status{margin:0;color:var(--ink-3);font-size:13px;text-align:center}
 
 /* 判定結果 */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;
-  border-left:5px solid var(--gcol,var(--muted))}
-.rname{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:900;font-size:31px;line-height:1.18;margin:2px 0 0}
-.ren{font-size:14px;color:var(--fg-2);margin:0}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;
-  padding:4px 9px;border-radius:99px;border:1px solid var(--border);color:var(--fg-2)}
-.chip.plate-dot::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--gcol,var(--muted))}
-.chip.warn{border-color:var(--maguro);color:var(--maguro)}
-.chip.ok{border-color:var(--wasabi);color:var(--wasabi)}
-.meter{height:5px;border-radius:3px;background:var(--shari-2);overflow:hidden;margin-top:13px}
-.meter i{display:block;height:100%;background:var(--gcol,var(--muted))}
-.conf{font-family:"Roboto Mono",ui-monospace,monospace;font-size:11.5px;color:var(--muted);
-  margin-top:6px;font-variant-numeric:tabular-nums}
-.cands{margin:11px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
-.cands li{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;
-  padding-bottom:7px;border-bottom:1px solid var(--border)}
-.cands li:last-child{border-bottom:0;padding-bottom:0}
-.cands span:last-child{font-family:"Roboto Mono",monospace;color:var(--muted);font-variant-numeric:tabular-nums}
-.note{font-size:12.5px;color:var(--muted);margin:12px 0 0;padding-top:12px;border-top:1px solid var(--border)}
+.result{border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 10px 30px rgba(80,50,30,.10);border:1px solid var(--line)}
+.result .band{background:var(--gc,#8A817A);color:#fff;padding:12px 22px;
+  font-family:"M PLUS Rounded 1c",sans-serif;font-weight:700;font-size:15px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.result .body{padding:22px 22px 24px}
+.result .en{margin:0;color:var(--ink-3);font-size:15px}
+.result h2{margin:2px 0 0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:42px;line-height:1.15;text-wrap:balance}
+.result .desc{margin:16px 0 0;font-size:18px;line-height:1.85}
+.result .desc-en{margin:8px 0 0;color:var(--ink-2);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:13px;font-weight:500;padding:5px 12px;border-radius:999px;background:#F5F1ED;color:var(--ink-2)}
+.chip.warn{background:#FDECEA;color:#B8322C}
+.chip.ok{background:#E8F5EC;color:#2B7A47}
+.meter{height:8px;border-radius:4px;background:#F2ECE6;overflow:hidden;margin-top:18px}
+.meter i{display:block;height:100%;background:var(--gc,#8A817A);border-radius:4px}
+.conf{margin:6px 0 0;color:var(--ink-3);font-size:13px}
+.cands{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.cands li{display:flex;justify-content:space-between;gap:12px;font-size:15px;padding:6px 0;border-bottom:1px solid var(--line)}
+.cands li:last-child{border-bottom:0}
+.cands li span:last-child{color:var(--ink-3);font-variant-numeric:tabular-nums}
+.note{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:#F7F3EF;color:var(--ink-2);font-size:14px}
 
-.row{display:flex;gap:10px;flex-wrap:wrap}
-.btn{flex:1 1 auto;min-width:130px;font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;
-  font-size:15px;padding:12px 16px;border-radius:11px;border:1px solid var(--border);
-  background:var(--surface);color:var(--fg);cursor:pointer;text-align:center}
-.btn:hover{border-color:var(--muted)}
-.btn.primary{background:var(--maguro);border-color:var(--maguro);color:#fff}
-.btn.primary:disabled{opacity:.4;cursor:default}
-.btn:focus-visible{outline:2px solid var(--wasabi);outline-offset:2px}
-input[type=file]{display:none}
-#status{font-family:"Roboto Mono",ui-monospace,monospace;font-size:12px;color:var(--muted);margin:0}
+/* ネタ図鑑 */
+.zukan h2{margin:0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:28px}
+.zukan > p{margin:4px 0 0;color:var(--ink-2);font-size:15px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px}
+.tabs::-webkit-scrollbar{height:0}
+.tab{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:700;
+  font-size:15px;padding:9px 16px;border-radius:999px;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.tab i{width:12px;height:12px;border-radius:50%;background:var(--gc)}
+.tab[aria-selected="true"]{background:var(--gc);border-color:var(--gc);color:#fff}
+.tab[aria-selected="true"] i{background:#fff}
+.gintro{margin-top:14px;border-radius:22px;padding:20px 22px;background:color-mix(in srgb,var(--gc) 10%,#fff);border:2px solid color-mix(in srgb,var(--gc) 25%,#fff)}
+.gintro h3{margin:0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:26px;color:color-mix(in srgb,var(--gc) 85%,#000)}
+.gintro .d{margin:8px 0 0;font-size:17px;line-height:1.85}
+.gintro .e{margin:6px 0 0;color:var(--ink-2);font-size:14.5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:14px}
+.card{border-radius:18px;background:#fff;border:2px solid var(--line);padding:16px 16px 18px;border-top:6px solid var(--gc)}
+.card.hit{border-color:var(--gc);box-shadow:0 0 0 3px color-mix(in srgb,var(--gc) 25%,transparent)}
+.card h4{margin:0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:21px;line-height:1.3}
+.card .en{margin:0;color:var(--ink-3);font-size:13px}
+.card .d{margin:8px 0 0;font-size:14.5px;line-height:1.8}
+.card .chips{margin-top:10px;gap:6px}
+.card .chip{font-size:12px;padding:3px 10px}
 
-.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px 14px;margin-top:12px}
-.legend div{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg-2)}
-.legend i{width:11px;height:11px;border-radius:50%;flex:none}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px}
-footer{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.75}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-@media (max-width:420px){.plate,.dish{width:128px}.dish{height:128px}}
+footer{color:var(--ink-3);font-size:13px;text-align:center;line-height:1.8}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media (max-width:440px){
+  header h1{font-size:28px}.result h2{font-size:34px}.result .desc{font-size:17px}
+  .plate,.dish{width:118px}.dish{height:118px}
+}
 </style>
 
 <div class="wrap">
   <header>
-    <p class="eyebrow">Conveyor-belt sushi · 回転寿司</p>
     <h1>これ、何のネタ？</h1>
-    <p class="lead">皿を撮ると、ネタの名前と<b>生で食べるものかどうか</b>を調べます。写真は端末から出ません。</p>
+    <p>回転寿司の皿を撮ると、ネタの名前と、どんな味か、生で食べるものかどうかを教えます。写真は端末から出ません。</p>
   </header>
 
   <section class="lane" aria-label="撮った皿">
@@ -116,103 +116,116 @@ footer{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.75}
     <p class="lane-empty" id="laneEmpty">皿を撮ると、ここに並びます。</p>
   </section>
 
-  <div class="row">
-    <label class="btn" for="cam">皿を撮る / Camera</label>
-    <label class="btn" for="pick">選ぶ / Choose</label>
+  <div class="actions">
+    <label class="btn" for="cam">皿を撮る</label>
+    <label class="btn" for="pick">写真を選ぶ</label>
+    <button class="btn primary" id="go" disabled>このネタは何？</button>
+    <button class="btn ghost" id="sample">サンプルの写真で試す</button>
   </div>
   <input id="cam" type="file" accept="image/*" capture="environment" multiple>
   <input id="pick" type="file" accept="image/*" multiple>
-  <div class="row">
-    <button class="btn primary" id="go" disabled>判定する / Identify</button>
-    <button class="btn" id="sample">サンプル3枚で試す</button>
-  </div>
-  <p id="status">モデルを読み込んでいます…</p>
+  <p id="status">準備しています…</p>
 
-  <section class="card" id="result" hidden></section>
+  <section class="result" id="result" hidden aria-live="polite"></section>
 
-  <section class="panel">
-    <p class="eyebrow">ふちの色でジャンルが分かります</p>
-    <div class="legend" id="legend"></div>
-    <p class="note">同じ皿を2〜3枚撮ると当たりやすくなります。自信がないときは、ネタ名を言わずにジャンルだけ答えます。</p>
+  <section class="zukan" aria-labelledby="zukanTitle">
+    <h2 id="zukanTitle">ネタ図鑑</h2>
+    <p>判定できる37種のネタを、6つのジャンルに分けて説明します。皿のふちの色はジャンルの色です。</p>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div id="zukanBody"></div>
   </section>
 
-  <footer>ブラウザの中だけで判定します。538枚で試して、ネタ名は74%、ジャンルは67%が当たりました。<br>
-  アレルギーは店員に確かめてください。</footer>
+  <footer>判定はブラウザの中だけで行います。検証用の538枚で試したところ、ネタ名で答えたときは74%、ジャンルで答えたときは67%が当たりました。<br>アレルギーは必ず店員に確かめてください。</footer>
 </div>
 
 <script src="ort.wasm.min.js"></script>
 <script>
-const GCOL = {maguro_salmon:"--maguro", shiromi_aomono:"--sora", ika_tako_ebi:"--ebi",
-  kai_nimono_tamago:"--wasabi", gunkan:"--nori", maki_sonota:"--ki"};
-const ALLERGEN = {salmon:["サーモン","Salmon"], shrimp:["えび","Shrimp"], crab:["かに","Crab"],
-  squid:["いか","Squid"], octopus:["たこ","Octopus"], scallop:["帆立","Scallop"],
-  shellfish:["貝類","Shellfish"], abalone:["あわび","Abalone"], mackerel:["さば","Mackerel"],
-  egg:["卵","Egg"], milk:["乳","Milk"], soy:["大豆","Soy"], wheat:["小麦","Wheat"]};
-let GENRE_TH = 0.45;
-let META = null, SESSION = null, SHOTS = [];
+const ALLERGEN = {salmon:"サーモン", shrimp:"えび", crab:"かに", squid:"いか", octopus:"たこ",
+  scallop:"ほたて", shellfish:"貝類", abalone:"あわび", mackerel:"さば", egg:"卵", milk:"乳",
+  soy:"大豆", wheat:"小麦"};
+let GENRE_TH = 0.45, META = null, SESSION = null, SHOTS = [], TAB = null, HIT = null;
 const $ = id => document.getElementById(id);
+const gc = g => g ? `var(--g-${g})` : "#8A817A";
 const setStatus = t => { $("status").textContent = t; };
-const gcolor = g => `var(${GCOL[g] || "--muted"})`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function chipsFor(it){
+  let h = "";
+  if(it.raw === true) h += `<span class="chip warn">生もの</span>`;
+  if(it.raw === false) h += `<span class="chip ok">加熱してある</span>`;
+  for(const a of (it.allergen || [])) h += `<span class="chip warn">${ALLERGEN[a] || a}</span>`;
+  return h;
+}
 
 async function boot(){
   try{
-    ort.env.wasm.wasmPaths = "./";
-    ort.env.wasm.numThreads = 1;
-    ort.env.wasm.simd = true;
     META = await (await fetch("meta.json")).json();
     if(META.genre_threshold) GENRE_TH = META.genre_threshold;
-    drawLegend();
+    drawTabs(); selectTab(Object.keys(META.genres)[0]);
+    ort.env.wasm.wasmPaths = "./"; ort.env.wasm.numThreads = 1; ort.env.wasm.simd = true;
     SESSION = await ort.InferenceSession.create("sushi-model.wasm", {executionProviders:["wasm"]});
-    setStatus("準備できました。");
+    setStatus("準備ができました。");
     renderLane();
-  }catch(e){
-    setStatus("モデルを読み込めませんでした: " + e.message);
-  }
+  }catch(e){ setStatus("読み込めませんでした: " + e.message); }
 }
 
-function drawLegend(){
-  const L = $("legend"); L.innerHTML = "";
-  for(const [k,v] of Object.entries(META.genres)){
-    const n = META.classes.filter(c => META.items[c].genre === k).length;
-    const d = document.createElement("div");
-    d.innerHTML = `<i style="background:${gcolor(k)}"></i><span>${v.ja} <span style="color:var(--muted)">${n}種</span></span>`;
-    L.appendChild(d);
+/* ネタ図鑑 */
+function drawTabs(){
+  const T = $("tabs"); T.innerHTML = "";
+  for(const [k, g] of Object.entries(META.genres)){
+    const b = document.createElement("button");
+    b.className = "tab"; b.type = "button"; b.role = "tab"; b.dataset.g = k;
+    b.style.setProperty("--gc", gc(k));
+    b.innerHTML = `<i></i>${esc(g.ja)}`;
+    b.onclick = () => selectTab(k);
+    T.appendChild(b);
   }
 }
+function selectTab(g){
+  TAB = g;
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.g === g));
+  const info = META.genres[g];
+  const list = META.classes.filter(c => META.items[c].genre === g);
+  const B = $("zukanBody");
+  B.style.setProperty("--gc", gc(g));
+  B.innerHTML =
+    `<div class="gintro"><h3>${esc(info.ja)}</h3>` +
+    `<p class="d">${esc(info.desc)}</p><p class="e">${esc(info.en)}: ${esc(info.desc_en)}</p></div>` +
+    `<div class="cards">` + list.map(c => {
+      const it = META.items[c];
+      return `<article class="card${c === HIT ? " hit" : ""}" id="card-${c}">` +
+        `<h4>${esc(it.ja)}</h4><p class="en">${esc(it.en)}</p>` +
+        `<p class="d">${esc(it.desc)}</p><div class="chips">${chipsFor(it)}</div></article>`;
+    }).join("") + `</div>`;
+}
 
+/* レーン */
 function renderLane(){
   const rail = $("rail"); rail.innerHTML = "";
   SHOTS.forEach((s, i) => {
-    const wrap = document.createElement("div"); wrap.className = "plate";
-    const dish = document.createElement("div"); dish.className = "dish";
-    dish.style.setProperty("--pc", gcolor(s.genre));
+    const w = document.createElement("div"); w.className = "plate";
+    const d = document.createElement("div"); d.className = "dish";
+    d.style.setProperty("--pc", s.genre ? gc(s.genre) : "#CFC6BC");
     const img = document.createElement("img"); img.src = s.url; img.alt = `${i+1}皿目`;
-    const del = document.createElement("button");
-    del.className = "del"; del.type = "button"; del.textContent = "×";
-    del.setAttribute("aria-label", `${i+1}皿目を外す`);
-    del.onclick = () => { if(s.blob) URL.revokeObjectURL(s.url); SHOTS.splice(i,1); renderLane(); };
-    dish.append(img, del);
-    const tag = document.createElement("p"); tag.className = "tag";
-    tag.textContent = s.label || "";
-    wrap.append(dish, tag); rail.appendChild(wrap);
+    const x = document.createElement("button"); x.className = "del"; x.type = "button"; x.textContent = "×";
+    x.setAttribute("aria-label", `${i+1}皿目を外す`);
+    x.onclick = () => { if(s.blob) URL.revokeObjectURL(s.url); SHOTS.splice(i,1); renderLane(); };
+    d.append(img, x);
+    const t = document.createElement("p"); t.className = "tag"; t.textContent = s.label || "";
+    w.append(d, t); rail.appendChild(w);
   });
   if(SHOTS.length < 6){
-    const wrap = document.createElement("div"); wrap.className = "plate";
-    const add = document.createElement("label");
-    add.className = "dish add"; add.setAttribute("for", "cam");
-    add.textContent = SHOTS.length ? "もう1枚" : "＋ 皿を撮る";
-    const tag = document.createElement("p"); tag.className = "tag"; tag.textContent = "";
-    wrap.append(add, tag); rail.appendChild(wrap);
+    const w = document.createElement("div"); w.className = "plate";
+    const a = document.createElement("label"); a.className = "dish add"; a.setAttribute("for", "cam");
+    a.textContent = SHOTS.length ? "もう1枚撮る" : "皿を撮る";
+    const t = document.createElement("p"); t.className = "tag";
+    w.append(a, t); rail.appendChild(w);
   }
   $("laneEmpty").hidden = SHOTS.length > 0;
-  $("go").disabled = SHOTS.length === 0 || !SESSION;
+  $("go").disabled = !SHOTS.length || !SESSION;
 }
-
 function addFiles(files){
-  for(const f of files){
-    if(SHOTS.length >= 6) break;
-    SHOTS.push({url: URL.createObjectURL(f), blob: true});
-  }
+  for(const f of files){ if(SHOTS.length >= 6) break; SHOTS.push({url: URL.createObjectURL(f), blob: true}); }
   renderLane();
 }
 $("cam").onchange = e => { addFiles(e.target.files); e.target.value = ""; };
@@ -223,117 +236,81 @@ $("sample").onclick = () => {
   renderLane(); run();
 };
 
+/* 推論：学習時と同じ前処理（短辺256に縮小、中央224を切り出し、ImageNet の平均と分散で正規化） */
 function toTensor(img, flip){
-  const S = 224, R = 256;
-  const c = document.createElement("canvas"); c.width = S; c.height = S;
+  const S = 224, R = 256, c = document.createElement("canvas"); c.width = S; c.height = S;
   const x = c.getContext("2d", {willReadFrequently:true});
-  const scale = R / Math.min(img.width, img.height);
-  const w = img.width * scale, h = img.height * scale;
+  const k = R / Math.min(img.width, img.height), w = img.width * k, h = img.height * k;
   if(flip){ x.translate(S, 0); x.scale(-1, 1); }
   x.drawImage(img, (S - w)/2, (S - h)/2, w, h);
-  const px = x.getImageData(0,0,S,S).data;
-  const mean = [0.485,0.456,0.406], std = [0.229,0.224,0.225];
+  const px = x.getImageData(0,0,S,S).data, mean = [.485,.456,.406], std = [.229,.224,.225];
   const out = new Float32Array(3*S*S);
-  for(let i=0;i<S*S;i++)
-    for(let ch=0;ch<3;ch++)
-      out[ch*S*S+i] = ((px[i*4+ch]/255) - mean[ch]) / std[ch];
+  for(let i = 0; i < S*S; i++) for(let ch = 0; ch < 3; ch++) out[ch*S*S+i] = (px[i*4+ch]/255 - mean[ch]) / std[ch];
   return new ort.Tensor("float32", out, [1,3,S,S]);
 }
-const loadImg = src => new Promise((res, rej) => {
-  const im = new Image(); im.crossOrigin = "anonymous";
-  im.onload = () => res(im); im.onerror = rej; im.src = src;
-});
-function softmax(a){
-  const m = Math.max(...a);
-  const e = a.map(v => Math.exp(v - m));
-  const s = e.reduce((p,q) => p+q, 0);
-  return e.map(v => v/s);
-}
+const loadImg = src => new Promise((ok, ng) => { const im = new Image(); im.onload = () => ok(im); im.onerror = ng; im.src = src; });
+function softmax(a){ const m = Math.max(...a), e = a.map(v => Math.exp(v - m)), s = e.reduce((p,q) => p+q, 0); return e.map(v => v/s); }
 
 async function run(){
   if(!SESSION || !SHOTS.length) return;
-  $("go").disabled = true;
-  setStatus(`${SHOTS.length}皿を調べています…`);
-  const n = META.classes.length, acc = new Array(n).fill(0);
-  let runs = 0;
+  $("go").disabled = true; setStatus(`${SHOTS.length}皿を調べています…`);
+  const n = META.classes.length, acc = new Array(n).fill(0); let runs = 0;
   try{
     for(const s of SHOTS){
-      const img = await loadImg(s.url);
-      const per = new Array(n).fill(0);
+      const img = await loadImg(s.url), per = new Array(n).fill(0);
       for(const flip of [false, true]){
         const o = await SESSION.run({input: toTensor(img, flip)});
         const p = softmax(Array.from(o.logits.data));
-        for(let i=0;i<n;i++){ per[i] += p[i]/2; acc[i] += p[i]; }
+        for(let i = 0; i < n; i++){ per[i] += p[i]/2; acc[i] += p[i]; }
         runs++;
       }
-      const bi = per.indexOf(Math.max(...per));
-      s.label = META.items[META.classes[bi]].ja;   // 皿ごとの見立て
-      s.genre = META.items[META.classes[bi]].genre;
+      const b = META.classes[per.indexOf(Math.max(...per))];
+      s.label = META.items[b].ja; s.genre = META.items[b].genre;
     }
-  }catch(e){
-    setStatus("判定できませんでした: " + e.message);
-    $("go").disabled = false; return;
-  }
-  renderLane();
-  show(acc.map(v => v/runs));
-  setStatus(`${SHOTS.length}皿を${runs}通りに見て平均しました。`);
+  }catch(e){ setStatus("判定できませんでした: " + e.message); $("go").disabled = false; return; }
+  renderLane(); show(acc.map(v => v/runs));
+  setStatus(`${SHOTS.length}皿を、左右を反転した写真も含めて${runs}回調べ、その平均で答えました。`);
   $("go").disabled = false;
 }
 
 function show(prob){
-  const cls = META.classes;
-  const order = prob.map((p,i) => [p,i]).sort((a,b) => b[0]-a[0]);
-  const [p1, i1] = order[0];
-  const top = cls[i1], item = META.items[top];
-  const byGenre = {};
-  cls.forEach((c,i) => { const g = META.items[c].genre; if(g) byGenre[g] = (byGenre[g]||0) + prob[i]; });
-  const gBest = Object.entries(byGenre).sort((a,b) => b[1]-a[1])[0];
+  const cls = META.classes, order = prob.map((p,i) => [p,i]).sort((a,b) => b[0]-a[0]);
+  const [p1, i1] = order[0], top = cls[i1], it = META.items[top];
+  const byG = {};
+  cls.forEach((c,i) => { const g = META.items[c].genre; if(g) byG[g] = (byG[g]||0) + prob[i]; });
+  const gBest = Object.entries(byG).sort((a,b) => b[1]-a[1])[0];
 
-  let mode, name, en, genre, conf;
-  if(top !== "unknown" && p1 >= (item.threshold ?? 0.45)){
-    mode = "class"; name = item.ja; en = item.en; genre = item.genre; conf = p1;
-  }else if(gBest && gBest[1] >= GENRE_TH){
-    mode = "genre"; genre = gBest[0];
-    name = META.genres[genre].ja; en = META.genres[genre].en; conf = gBest[1];
-  }else{
-    mode = "unknown"; name = "判別できません"; en = "Not sure"; genre = null; conf = p1;
-  }
+  let mode, genre, conf;
+  if(top !== "unknown" && p1 >= (it.threshold ?? .45)){ mode = "class"; genre = it.genre; conf = p1; }
+  else if(gBest && gBest[1] >= GENRE_TH){ mode = "genre"; genre = gBest[0]; conf = gBest[1]; }
+  else { mode = "unknown"; genre = null; conf = p1; }
 
-  const R = $("result"); R.hidden = false;
-  R.style.setProperty("--gcol", gcolor(genre));
+  const G = genre ? META.genres[genre] : null, U = META.items.unknown;
+  const band = mode === "unknown" ? "判別できませんでした" :
+               mode === "genre" ? `${G.ja}（ネタ名までは絞れませんでした）` : G.ja;
+  const title = mode === "class" ? it.ja : mode === "genre" ? G.ja : "判別できません";
+  const en = mode === "class" ? it.en : mode === "genre" ? G.en : "Not sure";
+  const desc = mode === "class" ? it.desc : mode === "genre" ? G.desc : U.desc;
+  const descEn = mode === "class" ? it.desc_en : mode === "genre" ? G.desc_en : U.desc_en;
 
-  let chips = "";
-  if(genre) chips += `<span class="chip plate-dot">${META.genres[genre].ja}</span>`;
-  if(mode === "class"){
-    if(item.raw === true) chips += `<span class="chip warn">生もの / Raw</span>`;
-    if(item.raw === false) chips += `<span class="chip ok">加熱済み / Cooked</span>`;
-    for(const a of (item.allergen || [])){
-      const t = ALLERGEN[a] || [a,a];
-      chips += `<span class="chip warn">${t[0]} / ${t[1]}</span>`;
-    }
-    if(!(item.allergen || []).length && item.raw !== null)
-      chips += `<span class="chip">特定原材料は使いません</span>`;
-  }
-  let sub = "";
-  if(mode === "class" && item.sub_labels?.length){
-    sub = `<p class="note">断面の色で中身が変わります。<br>` +
-      item.sub_labels.map(s => `${s.ja}（${s.cut_color}）`).join(" ／ ") + `</p>`;
-  }
-  const listed = mode === "class" ? order.slice(1,4) : order.slice(0,5);
-  const cands = listed.filter(([p]) => p > 0.01)
-    .map(([p,i]) => `<li><span>${META.items[cls[i]].ja}</span><span>${(p*100).toFixed(0)}%</span></li>`).join("");
+  const listed = (mode === "class" ? order.slice(1,4) : order.slice(0,5)).filter(([p]) => p > .01);
+  const cands = listed.map(([p,i]) => `<li><span>${esc(META.items[cls[i]].ja)}</span><span>${Math.round(p*100)}%</span></li>`).join("");
 
+  const R = $("result"); R.hidden = false; R.style.setProperty("--gc", gc(genre));
   R.innerHTML =
-    `<p class="eyebrow">判定</p>` +
-    `<p class="ren">${en}${mode === "genre" ? " — ネタ名までは絞れませんでした" : ""}</p>` +
-    `<h2 class="rname">${name}</h2>` +
-    `<div class="chips">${chips}</div>` +
+    `<div class="band"><span>${esc(band)}</span><span>確からしさ ${Math.round(conf*100)}%</span></div>` +
+    `<div class="body"><p class="en">${esc(en)}</p><h2>${esc(title)}</h2>` +
+    `<p class="desc">${esc(desc)}</p><p class="desc-en">${esc(descEn)}</p>` +
+    (mode === "class" ? `<div class="chips">${chipsFor(it)}</div>` : "") +
     `<div class="meter"><i style="width:${Math.round(conf*100)}%"></i></div>` +
-    `<p class="conf">この答えの確からしさ ${(conf*100).toFixed(0)}%</p>` +
-    (cands ? `<p class="eyebrow" style="margin-top:15px">${mode === "class" ? "他の候補" : "候補"}</p><ul class="cands">${cands}</ul>` : "") +
-    sub +
-    (mode !== "class" ? `<p class="note">角度を変えて1枚足すと、絞れることがあります。</p>` : "");
-  R.scrollIntoView({behavior:"smooth", block:"nearest"});
+    `<p class="conf">${SHOTS.length}皿の平均です。</p>` +
+    (cands ? `<ul class="cands" aria-label="${mode === "class" ? "ほかの候補" : "候補"}">${cands}</ul>` : "") +
+    (mode !== "class" ? `<p class="note">角度を変えてもう1枚撮ると、ネタ名まで絞れることがあります。</p>` : "") +
+    `</div>`;
+
+  HIT = mode === "class" ? top : null;
+  if(genre) selectTab(genre);
+  R.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 $("go").onclick = run;
