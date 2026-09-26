@@ -97,6 +97,21 @@ input[type=file]{display:none}
 .card .chips{margin-top:10px;gap:6px}
 .card .chip{font-size:12px;padding:3px 10px}
 
+/* サンプル写真 */
+.samples h2{margin:0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:800;font-size:24px}
+.samples > p{margin:4px 0 0;color:var(--ink-2);font-size:15px}
+.score{margin:10px 0 0;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:700;font-size:15px;color:var(--ink-2)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;margin-top:12px}
+.stile{position:relative;display:flex;flex-direction:column;gap:6px;padding:0;border:0;background:none;cursor:pointer;text-align:center}
+.stile img{width:100%;aspect-ratio:1;max-width:100%;object-fit:cover;border-radius:16px;border:4px solid var(--gc)}
+.stile span{font-family:"M PLUS Rounded 1c",sans-serif;font-weight:700;font-size:13px;color:var(--ink-2)}
+.stile b{position:absolute;top:6px;right:6px;min-width:26px;height:26px;padding:0 6px;border-radius:999px;
+  display:grid;place-items:center;font-size:14px;color:#fff}
+.stile b.ok{background:#2B9A57}.stile b.mid{background:#D99A0E}.stile b.ng{background:#D2382F}
+.stile:focus-visible img{outline:3px solid #2B8BD6;outline-offset:2px}
+.verdict{margin:0 0 14px;padding:10px 14px;border-radius:14px;font-family:"M PLUS Rounded 1c",sans-serif;font-weight:700;font-size:16px}
+.verdict.ok{background:#E8F5EC;color:#23794A}.verdict.mid{background:#FDF3DC;color:#946400}.verdict.ng{background:#FDECEA;color:#B8322C}
+
 footer{color:var(--ink-3);font-size:13px;text-align:center;line-height:1.8}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 @media (max-width:440px){
@@ -120,13 +135,20 @@ footer{color:var(--ink-3);font-size:13px;text-align:center;line-height:1.8}
     <label class="btn" for="cam">皿を撮る</label>
     <label class="btn" for="pick">写真を選ぶ</label>
     <button class="btn primary" id="go" disabled>このネタは何？</button>
-    <button class="btn ghost" id="sample">サンプルの写真で試す</button>
+    <button class="btn ghost" id="random">サンプルからランダムに試す</button>
   </div>
   <input id="cam" type="file" accept="image/*" capture="environment" multiple>
   <input id="pick" type="file" accept="image/*" multiple>
   <p id="status">準備しています…</p>
 
   <section class="result" id="result" hidden aria-live="polite"></section>
+
+  <section class="samples" aria-labelledby="samplesTitle">
+    <h2 id="samplesTitle">サンプル写真で試す</h2>
+    <p>学習には使っていない写真です。押すと、そのネタの写真2枚で判定します。</p>
+    <p class="score" id="score" hidden></p>
+    <div class="sgrid" id="sgrid"></div>
+  </section>
 
   <section class="zukan" aria-labelledby="zukanTitle">
     <h2 id="zukanTitle">ネタ図鑑</h2>
@@ -144,6 +166,7 @@ const ALLERGEN = {salmon:"サーモン", shrimp:"えび", crab:"かに", squid:"
   scallop:"ほたて", shellfish:"貝類", abalone:"あわび", mackerel:"さば", egg:"卵", milk:"乳",
   soy:"大豆", wheat:"小麦"};
 let GENRE_TH = 0.45, META = null, SESSION = null, SHOTS = [], TAB = null, HIT = null;
+let SAMPLES = [], TRUTH = null, TRIED = {};   // TRUTH: サンプルで試したときの正解クラス
 const $ = id => document.getElementById(id);
 const gc = g => g ? `var(--g-${g})` : "#8A817A";
 const setStatus = t => { $("status").textContent = t; };
@@ -162,6 +185,8 @@ async function boot(){
     META = await (await fetch("meta.json")).json();
     if(META.genre_threshold) GENRE_TH = META.genre_threshold;
     drawTabs(); selectTab(Object.keys(META.genres)[0]);
+    SAMPLES = await (await fetch("samples.json")).json();
+    drawSamples();
     ort.env.wasm.wasmPaths = "./"; ort.env.wasm.numThreads = 1; ort.env.wasm.simd = true;
     SESSION = await ort.InferenceSession.create("sushi-model.wasm", {executionProviders:["wasm"]});
     setStatus("準備ができました。");
@@ -225,16 +250,39 @@ function renderLane(){
   $("go").disabled = !SHOTS.length || !SESSION;
 }
 function addFiles(files){
+  if(TRUTH){ SHOTS = []; TRUTH = null; }     // サンプルの後に自分の写真を足したら、別の判定として扱う
   for(const f of files){ if(SHOTS.length >= 6) break; SHOTS.push({url: URL.createObjectURL(f), blob: true}); }
   renderLane();
 }
 $("cam").onchange = e => { addFiles(e.target.files); e.target.value = ""; };
 $("pick").onchange = e => { addFiles(e.target.files); e.target.value = ""; };
-$("sample").onclick = () => {
-  SHOTS.forEach(s => s.blob && URL.revokeObjectURL(s.url));
-  SHOTS = [1,2,3].map(i => ({url:`sample${i}.jpg`}));
+
+/* サンプル写真 */
+function drawSamples(){
+  const G = $("sgrid"); G.innerHTML = "";
+  for(const s of SAMPLES){
+    const it = META.items[s.cls];
+    const b = document.createElement("button");
+    b.className = "stile"; b.type = "button";
+    b.style.setProperty("--gc", gc(it.genre));
+    const r = TRIED[s.cls];
+    b.innerHTML = `<img src="${s.files[0]}" alt="${esc(it.ja)}のサンプル" loading="lazy">` +
+      `<span>${esc(it.ja)}</span>` + (r === undefined ? "" : `<b class="${r === "genre" ? "mid" : r}">${r === "ok" ? "○" : r === "genre" ? "△" : "×"}</b>`);
+    b.onclick = () => trySample(s);
+    G.appendChild(b);
+  }
+  const v = Object.values(TRIED), n = v.length;
+  const ok = v.filter(x => x === "ok").length, g = v.filter(x => x === "genre").length;
+  $("score").hidden = !n;
+  $("score").textContent = `試したネタ ${n}種のうち、ネタ名まで当たったのが${ok}種、ジャンルだけ合ったのが${g}種です。`;
+}
+function trySample(s){
+  SHOTS.forEach(x => x.blob && URL.revokeObjectURL(x.url));
+  SHOTS = s.files.map(url => ({url}));
+  TRUTH = s.cls;
   renderLane(); run();
-};
+}
+$("random").onclick = () => { if(SAMPLES.length) trySample(SAMPLES[Math.floor(Math.random() * SAMPLES.length)]); };
 
 /* 推論：学習時と同じ前処理（短辺256に縮小、中央224を切り出し、ImageNet の平均と分散で正規化） */
 function toTensor(img, flip){
@@ -296,10 +344,21 @@ function show(prob){
   const listed = (mode === "class" ? order.slice(1,4) : order.slice(0,5)).filter(([p]) => p > .01);
   const cands = listed.map(([p,i]) => `<li><span>${esc(META.items[cls[i]].ja)}</span><span>${Math.round(p*100)}%</span></li>`).join("");
 
+  // サンプルなら正解と比べる。ジャンルで答えたときはジャンルが合っていれば当たりとする
+  let verdict = "";
+  if(TRUTH){
+    const t = META.items[TRUTH];
+    const r = mode === "class" && top === TRUTH ? "ok" : mode === "genre" && genre === t.genre ? "genre" : "ng";
+    TRIED[TRUTH] = r;
+    verdict = `<p class="verdict ${r === "genre" ? "mid" : r}">正解は「${esc(t.ja)}」です。` +
+      (r === "ok" ? "当たりました。" : r === "genre" ? "ネタ名は答えませんでしたが、ジャンルは合っていました。" : "外れました。") + `</p>`;
+    drawSamples();
+  }
+
   const R = $("result"); R.hidden = false; R.style.setProperty("--gc", gc(genre));
   R.innerHTML =
     `<div class="band"><span>${esc(band)}</span><span>確からしさ ${Math.round(conf*100)}%</span></div>` +
-    `<div class="body"><p class="en">${esc(en)}</p><h2>${esc(title)}</h2>` +
+    `<div class="body">${verdict}<p class="en">${esc(en)}</p><h2>${esc(title)}</h2>` +
     `<p class="desc">${esc(desc)}</p><p class="desc-en">${esc(descEn)}</p>` +
     (mode === "class" ? `<div class="chips">${chipsFor(it)}</div>` : "") +
     `<div class="meter"><i style="width:${Math.round(conf*100)}%"></i></div>` +
